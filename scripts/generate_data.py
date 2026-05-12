@@ -42,16 +42,59 @@ for i in range(1, n_games + 1):
     
     
 mods = []
+
 for i in range(1, n_mods + 1):
     game_id = random.randint(1, n_games)
     creator_id = random.randint(1, n_users)
+
+    category = random.choice([
+        "visual",
+        "gameplay",
+        "ui",
+        "quests",
+        "performance"
+    ])
+
     mods.append({
         "mod_id": i,
         "game_id": game_id,
         "creator_id": creator_id,
-        "category": random.choice(["visual", "gameplay", "ui", "quests", "performance"]),
+
+        "mod_name": random.choice([
+            "Immersive Texture Overhaul",
+            "Better Combat AI",
+            "Expanded Questline",
+            "Performance Optimizer",
+            "UI Quality of Life Pack",
+        ]),
+
+        "description": random.choice([
+            "Improves textures, lighting, and visual fidelity for a more immersive experience.",
+            "Adds smarter enemy behaviour, balance changes, and combat difficulty improvements.",
+            "Introduces new quests, NPC dialogue, locations, and story content.",
+            "Reduces load times, fixes stuttering, and improves FPS on lower-end machines.",
+            "Redesigns menus, inventory screens, HUD elements, and accessibility options.",
+        ]),
+
+        "category": category,
+        "primary_label": category,
+
+        "tags": random.choice([
+            "graphics, textures, lighting",
+            "combat, balance, difficulty",
+            "story, quests, npcs",
+            "fps, optimisation, bugfix",
+            "hud, menus, accessibility"
+        ]),
+
         "created_at": fake.date_between(start_date="-18m", end_date="-1d"),
-        "moderation_status": random.choice(["approved", "approved", "approved", "pending", "rejected"]),
+        "moderation_status": random.choice([
+            "approved",
+            "approved",
+            "approved",
+            "pending",
+            "rejected"
+        ]),
         "dependency_count": random.randint(0, 5)
     })
     
