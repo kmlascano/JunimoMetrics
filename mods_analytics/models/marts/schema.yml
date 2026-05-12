@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: mart_game_growth
+    description: "Game-level growth mart showing download activity, active downloaders and completion rate."
+    columns:
+      - name: game_id
+        tests:
+          - not_null
+      - name: game_name
+        tests:
+          - not_null
+      - name: download_starts
+        tests:
+          - not_null
+      - name: completion_rate
+        tests:
+          - not_null
+
+  - name: mart_lifecycle_audiences
+    description: "User-level lifecycle audience mart for lifecycle marketing and activation use cases."
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: lifecycle_audience
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - inactive_creator
+                  - at_risk_premium_user
+                  - high_intent_free_user
+                  - new_user_activation
+                  - general_engagement

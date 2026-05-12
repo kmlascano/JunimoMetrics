@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: stg_users
+    description: "Cleaned user dimension from synthetic Nexus Mods-style user data."
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: lifecycle_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["new", "active", "inactive", "at_risk"]
+
+  - name: stg_games
+    description: "Cleaned game dimension."
+    columns:
+      - name: game_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_mods
+    description: "Cleaned mods dimension."
+    columns:
+      - name: mod_id
+        tests:
+          - unique
+          - not_null
+      - name: moderation_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["approved", "pending", "rejected"]
+
+  - name: stg_download_events
+    description: "Download event stream with session, source channel and completion outcome."
+    columns:
+      - name: event_id
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+      - name: mod_id
+        tests:
+          - not_null
+      - name: source_channel
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["search", "collection", "game_page", "recommendation"]

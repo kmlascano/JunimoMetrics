@@ -1,0 +1,6 @@
+metric_name,definition,model,grain
+download_completion_rate,Completed downloads divided by started downloads,mart_game_growth,game
+active_downloaders,Distinct users with at least one download event,mart_game_growth,game
+completed_downloads,Count of download events where download_completed is true,mart_game_growth,game
+high_intent_free_user,Free user with 10 or more download events in the last 90 days,mart_lifecycle_audiences,user
+at_risk_premium_user,Premium user whose lifecycle status is at_risk,mart_lifecycle_audiences,user
