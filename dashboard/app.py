@@ -7,12 +7,144 @@ con = duckdb.connect("../nexus_mods.duckdb")
 
 st.set_page_config(page_title="Junimo Metrics", layout="wide")
 
-st.title("Junimo Metrics Dashboard for Mods Analytics")
-st.caption(
-    "Synthetic modding analytics platform with dbt models, tested marts, "
-    "lifecycle audiences, ML-powered mod classification, discovery scoring, "
-    "and recommendations."
-)
+st.markdown("""
+<style>
+/* Import a soft pixel-ish Google font fallback */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+/* Main app background */
+.stApp {
+    background: linear-gradient(180deg, #fff7dc 0%, #f7e7b8 45%, #d8f0c2 100%);
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Main content width and spacing */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+/* Main title */
+h1 {
+    color: #5c4033;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 0px #f6d98b;
+}
+
+/* Section headers */
+h2, h3 {
+    color: #6b4226;
+    font-weight: 800;
+}
+
+/* Caption text */
+[data-testid="stCaptionContainer"] {
+    color: #7a5c44;
+    font-size: 1rem;
+}
+
+/* Metric cards */
+[data-testid="stMetric"] {
+    background: #fff8df;
+    border: 3px solid #d69b52;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 4px 4px 0px #a86f3d;
+}
+
+/* Metric label */
+[data-testid="stMetricLabel"] {
+    color: #6b4226;
+    font-weight: 800;
+}
+
+/* Metric value */
+[data-testid="stMetricValue"] {
+    color: #3f6f3f;
+    font-weight: 800;
+}
+
+/* Dataframes */
+[data-testid="stDataFrame"] {
+    background: #fff8df;
+    border: 3px solid #d69b52;
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 4px 4px 0px #a86f3d;
+}
+
+/* Plot containers */
+[data-testid="stPlotlyChart"] {
+    background: #fff8df;
+    border: 3px solid #d69b52;
+    border-radius: 16px;
+    padding: 12px;
+    box-shadow: 4px 4px 0px #a86f3d;
+    margin-bottom: 2rem;
+}
+
+/* Warning boxes */
+[data-testid="stAlert"] {
+    border-radius: 14px;
+    border: 2px solid #d69b52;
+}
+
+/* Horizontal visual spacing */
+hr {
+    border: none;
+    border-top: 3px dashed #d69b52;
+    margin: 2rem 0;
+}
+
+/* Sidebar, if used later */
+[data-testid="stSidebar"] {
+    background: #e7c985;
+}
+
+/* Make tables text softer */
+table {
+    color: #3e3028;
+}
+
+/* Cute buttons if you add filters later */
+.stButton > button {
+    background-color: #8fbc5a;
+    color: white;
+    border: 3px solid #5c7f35;
+    border-radius: 14px;
+    font-weight: 800;
+    box-shadow: 3px 3px 0px #4f6f2c;
+}
+
+.stButton > button:hover {
+    background-color: #78a84b;
+    color: white;
+    border-color: #4f6f2c;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<div style="
+    background: #fff8df;
+    border: 4px solid #d69b52;
+    border-radius: 24px;
+    padding: 24px 28px;
+    box-shadow: 6px 6px 0px #a86f3d;
+    margin-bottom: 28px;
+">
+    <h1 style="margin-bottom: 0.3rem;">🌱 Junimo Metrics</h1>
+    <p style="
+        font-size: 1.1rem;
+        color: #6b4226;
+        margin-bottom: 0;
+    ">
+        A cozy Stardew-inspired analytics dashboard for mods, discovery, classification, and recommendations.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 
 @st.cache_data
@@ -59,17 +191,17 @@ try:
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("Games", game_growth["game_id"].nunique())
-    col2.metric("Download Starts", int(game_growth["download_starts"].sum()))
-
+    col1.metric("🎮 Games", game_growth["game_id"].nunique())
+    col2.metric("📦 Download Starts", int(game_growth["download_starts"].sum()))
     completion_rate = (
         game_growth["completed_downloads"].sum()
         / game_growth["download_starts"].sum()
     )
+    col3.metric("✅ Completion Rate", f"{completion_rate:.1%}")
+    
 
-    col3.metric("Completion Rate", f"{completion_rate:.1%}")
 
-    st.subheader("Game Growth")
+    st.markdown("## 🌾 Game Growth")
     st.dataframe(game_growth, use_container_width=True)
 
     fig = px.bar(
@@ -81,7 +213,7 @@ try:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("Lifecycle Audiences")
+    st.markdown("## 🧺 Lifecycle Audiences")
     st.dataframe(audiences, use_container_width=True)
 
     fig2 = px.bar(
@@ -100,7 +232,7 @@ except Exception as e:
     st.exception(e)
 
 
-st.subheader("ML Mod Classification")
+st.markdown("## 🧠 Mod Classification")
 
 try:
     ml_classification = load_ml_classification()
@@ -108,12 +240,12 @@ try:
     ml_col1, ml_col2, ml_col3 = st.columns(3)
 
     ml_col1.metric(
-        "Classified Mods",
-        f"{ml_classification['mod_id'].nunique():,}"
+    "🌱 Classified Mods",
+    f"{ml_classification['mod_id'].nunique():,}"
     )
 
     ml_col2.metric(
-        "Avg Confidence",
+        "✨ Avg Confidence",
         f"{ml_classification['classification_confidence'].mean():.1%}"
     )
 
@@ -122,9 +254,9 @@ try:
     ).sum()
 
     ml_col3.metric(
-        "Needs Review",
-        f"{low_confidence_count:,}"
-    )
+    "🧺 Needs Review",
+    f"{low_confidence_count:,}"
+    )  
 
     category_counts = (
         ml_classification
@@ -160,7 +292,7 @@ except Exception as e:
 
 
 
-st.subheader("Discovery Quality")
+st.markdown("## 🔍 Discovery Quality")
 
 try:
     discovery = con.execute("""
@@ -194,7 +326,7 @@ except Exception as e:
     )
 
 
-st.subheader("Discovery Quality Score")
+st.markdown("## ⭐ Discovery Quality Score")
 
 try:
     discovery_scores = con.execute("""
@@ -233,7 +365,7 @@ except Exception as e:
     )
 
 
-st.subheader("Mod Recommendations")
+st.markdown("## 🍄 Mod Recommendations")
 
 try:
     recommendations = con.execute("""
@@ -258,8 +390,10 @@ except Exception as e:
         "Recommendation table not found yet. "
         "Run `python ml/recommend_mods.py` first."
     )
+    
 
-st.subheader("Metric Catalogue")
+
+st.markdown("## 📚 Metric Catalogue")
 
 try:
     metrics = load_metric_catalogue()
