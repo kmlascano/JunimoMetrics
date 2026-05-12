@@ -5,12 +5,43 @@ import plotly.express as px
 
 con = duckdb.connect("../nexus_mods.duckdb")
 
-st.set_page_config(page_title="Junimo Metrics", layout="wide")
+st.set_page_config(
+    page_title="Junimo Metrics",
+    page_icon="🌱",
+    layout="wide"
+)
+
+
+# -----------------------------
+# Cozy Stardew-inspired styling
+# -----------------------------
 
 st.markdown("""
 <style>
-/* Import a soft pixel-ish Google font fallback */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+/* Hide Streamlit top toolbar / Deploy button */
+[data-testid="stToolbar"] {
+    visibility: hidden;
+    height: 0%;
+    position: fixed;
+}
+
+/* Hide Streamlit header */
+[data-testid="stHeader"] {
+    visibility: hidden;
+    height: 0%;
+}
+
+/* Hide default Streamlit menu */
+#MainMenu {
+    visibility: hidden;
+}
+
+/* Hide footer */
+footer {
+    visibility: hidden;
+}
 
 /* Main app background */
 .stApp {
@@ -20,7 +51,7 @@ st.markdown("""
 
 /* Main content width and spacing */
 .block-container {
-    padding-top: 2rem;
+    padding-top: 1rem;
     padding-bottom: 4rem;
 }
 
@@ -38,10 +69,9 @@ h2, h3 {
     font-weight: 800;
 }
 
-/* Caption text */
-[data-testid="stCaptionContainer"] {
-    color: #7a5c44;
-    font-size: 1rem;
+/* Normal text */
+p, div, span {
+    font-family: 'Nunito', sans-serif;
 }
 
 /* Metric cards */
@@ -90,24 +120,17 @@ h2, h3 {
     border: 2px solid #d69b52;
 }
 
-/* Horizontal visual spacing */
-hr {
-    border: none;
-    border-top: 3px dashed #d69b52;
-    margin: 2rem 0;
-}
-
-/* Sidebar, if used later */
+/* Sidebar */
 [data-testid="stSidebar"] {
     background: #e7c985;
 }
 
-/* Make tables text softer */
+/* Tables text */
 table {
     color: #3e3028;
 }
 
-/* Cute buttons if you add filters later */
+/* Cute buttons if filters are added later */
 .stButton > button {
     background-color: #8fbc5a;
     color: white;
@@ -122,30 +145,70 @@ table {
     color: white;
     border-color: #4f6f2c;
 }
-</style>
-""", unsafe_allow_html=True)
 
+/* Custom cute divider */
+.cozy-divider {
+    border-top: 4px dashed #d69b52;
+    margin: 2.3rem 0;
+}
 
-st.markdown("""
-<div style="
+/* Small section label */
+.cozy-label {
+    color: #7a5c44;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* Hero card */
+.hero-card {
     background: #fff8df;
     border: 4px solid #d69b52;
     border-radius: 24px;
     padding: 24px 28px;
     box-shadow: 6px 6px 0px #a86f3d;
     margin-bottom: 28px;
-">
+}
+
+/* Little intro cards */
+.info-card {
+    background: #fff8df;
+    border: 3px solid #d69b52;
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: 4px 4px 0px #a86f3d;
+    color: #6b4226;
+    margin-bottom: 1rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+def cozy_divider():
+    st.markdown('<div class="cozy-divider"></div>', unsafe_allow_html=True)
+
+
+# -----------------------------
+# Header
+# -----------------------------
+
+st.markdown("""
+<div class="hero-card">
     <h1 style="margin-bottom: 0.3rem;">🌱 Junimo Metrics</h1>
     <p style="
         font-size: 1.1rem;
         color: #6b4226;
         margin-bottom: 0;
     ">
-        A cozy Stardew-inspired analytics dashboard for mods, discovery, classification, and recommendations.
+        A cozy Stardew-inspired analytics dashboard for mods, discovery,
+        classification, and recommendations.
     </p>
 </div>
 """, unsafe_allow_html=True)
 
+
+# -----------------------------
+# Data loaders
+# -----------------------------
 
 @st.cache_data
 def load_game_growth():
@@ -184,6 +247,9 @@ def load_ml_classification():
     """).df()
 
 
+# -----------------------------
+# Core product analytics
+# -----------------------------
 
 try:
     game_growth = load_game_growth()
@@ -193,13 +259,15 @@ try:
 
     col1.metric("🎮 Games", game_growth["game_id"].nunique())
     col2.metric("📦 Download Starts", int(game_growth["download_starts"].sum()))
+
     completion_rate = (
         game_growth["completed_downloads"].sum()
         / game_growth["download_starts"].sum()
     )
-    col3.metric("✅ Completion Rate", f"{completion_rate:.1%}")
-    
 
+    col3.metric("✅ Completion Rate", f"{completion_rate:.1%}")
+
+    cozy_divider()
 
     st.markdown("## 🌾 Game Growth")
     st.dataframe(game_growth, use_container_width=True)
@@ -212,6 +280,8 @@ try:
         title="Download Starts by Game"
     )
     st.plotly_chart(fig, use_container_width=True)
+
+    cozy_divider()
 
     st.markdown("## 🧺 Lifecycle Audiences")
     st.dataframe(audiences, use_container_width=True)
@@ -232,16 +302,30 @@ except Exception as e:
     st.exception(e)
 
 
+cozy_divider()
+
+
+# -----------------------------
+# ML classification
+# -----------------------------
+
 st.markdown("## 🧠 Mod Classification")
 
 try:
     ml_classification = load_ml_classification()
 
+    st.markdown("""
+    <div class="info-card">
+        This section uses a trained text classification model to assign mods into
+        structured categories using names, descriptions, tags, and metadata.
+    </div>
+    """, unsafe_allow_html=True)
+
     ml_col1, ml_col2, ml_col3 = st.columns(3)
 
     ml_col1.metric(
-    "🌱 Classified Mods",
-    f"{ml_classification['mod_id'].nunique():,}"
+        "🌱 Classified Mods",
+        f"{ml_classification['mod_id'].nunique():,}"
     )
 
     ml_col2.metric(
@@ -254,9 +338,9 @@ try:
     ).sum()
 
     ml_col3.metric(
-    "🧺 Needs Review",
-    f"{low_confidence_count:,}"
-    )  
+        "🧺 Needs Review",
+        f"{low_confidence_count:,}"
+    )
 
     category_counts = (
         ml_classification
@@ -274,7 +358,7 @@ try:
 
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.write("Low-confidence classifications for review")
+    st.markdown("### 🧺 Low-confidence classifications for review")
 
     review_queue = (
         ml_classification
@@ -291,6 +375,12 @@ except Exception as e:
     )
 
 
+cozy_divider()
+
+
+# -----------------------------
+# Discovery quality
+# -----------------------------
 
 st.markdown("## 🔍 Discovery Quality")
 
@@ -325,6 +415,13 @@ except Exception as e:
         "Run `python ml/score_mods.py` first."
     )
 
+
+cozy_divider()
+
+
+# -----------------------------
+# Discovery score
+# -----------------------------
 
 st.markdown("## ⭐ Discovery Quality Score")
 
@@ -365,6 +462,13 @@ except Exception as e:
     )
 
 
+cozy_divider()
+
+
+# -----------------------------
+# Recommendations
+# -----------------------------
+
 st.markdown("## 🍄 Mod Recommendations")
 
 try:
@@ -374,6 +478,13 @@ try:
         order by similarity_score desc
         limit 100
     """).df()
+
+    st.markdown("""
+    <div class="info-card">
+        These recommendations are based on completed download behaviour.
+        Mods with similar user interaction patterns are grouped together.
+    </div>
+    """, unsafe_allow_html=True)
 
     st.dataframe(recommendations, use_container_width=True)
 
@@ -390,8 +501,9 @@ except Exception as e:
         "Recommendation table not found yet. "
         "Run `python ml/recommend_mods.py` first."
     )
-    
 
+
+cozy_divider()
 
 st.markdown("## 📚 Metric Catalogue")
 
