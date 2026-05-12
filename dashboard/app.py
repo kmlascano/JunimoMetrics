@@ -12,9 +12,7 @@ st.set_page_config(
 )
 
 
-# -----------------------------
-# Cozy Stardew-inspired styling
-# -----------------------------
+
 
 st.markdown("""
 <style>
@@ -187,9 +185,7 @@ def cozy_divider():
     st.markdown('<div class="cozy-divider"></div>', unsafe_allow_html=True)
 
 
-# -----------------------------
-# Header
-# -----------------------------
+
 
 st.markdown("""
 <div class="hero-card">
@@ -199,16 +195,13 @@ st.markdown("""
         color: #6b4226;
         margin-bottom: 0;
     ">
-        A cozy Stardew-inspired analytics dashboard for mods, discovery,
+        A cozy analytics dashboard for mods, discovery,
         classification, and recommendations.
     </p>
 </div>
 """, unsafe_allow_html=True)
 
 
-# -----------------------------
-# Data loaders
-# -----------------------------
 
 @st.cache_data
 def load_game_growth():
@@ -247,9 +240,7 @@ def load_ml_classification():
     """).df()
 
 
-# -----------------------------
-# Core product analytics
-# -----------------------------
+
 
 try:
     game_growth = load_game_growth()
@@ -304,10 +295,6 @@ except Exception as e:
 
 cozy_divider()
 
-
-# -----------------------------
-# ML classification
-# -----------------------------
 
 st.markdown("## 🧠 Mod Classification")
 
@@ -378,10 +365,6 @@ except Exception as e:
 cozy_divider()
 
 
-# -----------------------------
-# Discovery quality
-# -----------------------------
-
 st.markdown("## 🔍 Discovery Quality")
 
 try:
@@ -418,10 +401,6 @@ except Exception as e:
 
 cozy_divider()
 
-
-# -----------------------------
-# Discovery score
-# -----------------------------
 
 st.markdown("## ⭐ Discovery Quality Score")
 
@@ -464,10 +443,6 @@ except Exception as e:
 
 cozy_divider()
 
-
-# -----------------------------
-# Recommendations
-# -----------------------------
 
 st.markdown("## 🍄 Mod Recommendations")
 
